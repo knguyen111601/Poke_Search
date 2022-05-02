@@ -1,24 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import pokemon from './utils/pokedex';
 
 function App() {
+
+  const [display, setDisplay] = useState(pokemon)
+
+  const [search, setSearch] = useState("")
+
+  useEffect(()=>{
+    if (search === "") {
+      setDisplay(pokemon)
+    }
+  }, [search])
+
+  const returnMatch = (searchTerm: string) => {
+    return pokemon.filter((poke)=>{
+      return poke.name.toLowerCase().includes(searchTerm)
+    })
+  }
+
+  const searchFunction = (event: React.FormEvent<HTMLInputElement>) => {
+    setSearch(event.currentTarget.value)
+    setDisplay(returnMatch(search))
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>PokeDex Search</h1>
+      <input name={search} value={search} placeholder="Search for a Pokemon" onChange={searchFunction}/>
+    <div style={{display:"flex", flexWrap:"wrap", margin:"auto"}}>
+      {display.map((poke)=>{
+        return <div style={{marginRight:"50px"}}>
+          <h1>{poke.name}</h1>
+          <img src={poke.img} alt={poke.name}/>
+        </div>
+      })}
+    </div>
     </div>
   );
 }
